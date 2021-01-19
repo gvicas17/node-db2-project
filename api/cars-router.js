@@ -1,6 +1,5 @@
 const express = require('express')
 const db = require('../data/db-config')
-const { disabled } = require('./server')
 const router = express.Router()
 
 
@@ -28,7 +27,7 @@ router.get('/:id', (req, res) => {
         res.status(500).json({message: 'Failed to retrieve car info'})
     })
 })
-router.post('/', (req, res) => {
+router.post('/',checkBody, (req, res) => {
     const carData = req.body
     db('cars')
     .insert(carData, 'id')
@@ -44,7 +43,7 @@ router.post('/', (req, res) => {
         res.status(500).json(err)
     })
 })
-router.put('/:id', (req, res) => {
+router.put('/:id',checkBody, (req, res) => {
     const {id} = req.params
     const changes = req.body
 
@@ -79,6 +78,16 @@ router.delete('/', (req, res) => {
         res.status(500).json({message: 'Failed to delete'})
     })
 })
+
+function checkBody(req, res, next){
+    const {vin, make, model, miles} = req.body
+
+    if(vin, make, model, miles){
+        next()
+    }else{
+        res.status(400).json({message: 'please provide vin, make, model, and miles'})
+    }
+}
 
 
 module.exports = router;
